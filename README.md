@@ -11,6 +11,7 @@ sobre predicción de precios de transferencia de jugadores de fútbol. El proyec
 - **Scraping**: Contiene los scripts usados para recolectar datos de diversas fuentes en línea mediante técnicas de web scraping.
 - **Interfaz**: Esta carpeta alberga los scripts necesarios para ejecutar la interfaz de usuario desarrollada con Streamlit, que permite interactuar con el modelo de predicción.
 - **combinado_datos**: Incluye scripts que facilitan la integración y limpieza de diferentes conjuntos de datos para prepararlos para el análisis.
+- **pkt**: Contiene el archivo pkt que hay que pasarle a la interfaz para probarla
 
 ## Scraping
 
