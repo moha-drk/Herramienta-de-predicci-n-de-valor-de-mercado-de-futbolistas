@@ -1,0 +1,53 @@
+# Load required packages or install them if they're not available
+if (!require("worldfootballR")) {
+  install.packages("worldfootballR")
+  library(worldfootballR)
+}
+if (!require("dplyr")) {
+  install.packages("dplyr")
+  library(dplyr)
+}
+
+# Define countries and years
+countries <- c("Spain", "Brazil", "Germany", "France", "Italy", "England", "Portugal",
+               "Netherlands", "Uruguay", "Belgium", "Colombia", "Mexico", "Chile",
+               "Croatia", "Sweden", "Switzerland", "United States", "Austria",
+               "Russia", "Türkiye", "Greece", "Ukraine", "Scotland", "Denmark")
+years <- 2018:2024
+
+# Initialize an empty data frame to store injury data
+all_injuries <- data.frame()
+
+# Function to fetch and store injuries data
+fetch_injury_data <- function(country, year) {
+  message(paste("Fetching injury data for", country, "year", year))
+  tryCatch({
+    # Fetch injuries from the top-tier league of the specified country and year
+    injuries <- tm_league_injuries(country_name = country, year = year)  # Cambié `season_end_year` por `year`
+    if (nrow(injuries) > 0) {
+      injuries$Country <- country  # Add country information
+      injuries$Year <- year        # Add year information
+      return(injuries)
+    }
+  }, error = function(e) {
+    message(paste("Failed to fetch data for", country, "year", year, "Error:", e$message))
+    return(NULL)
+  })
+}
+
+# Loop over each country and year, collect data
+for (country in countries) {
+  for (year in years) {
+    injury_data <- fetch_injury_data(country, year)
+    if (!is.null(injury_data)) {
+      all_injuries <- bind_rows(all_injuries, injury_data)
+    }
+  }
+}
+
+# View the result
+View(all_injuries)
+
+# Save the data to a CSV file
+write.csv(all_injuries, "all_injuries_2018_2024.csv", row.names = FALSE)
+

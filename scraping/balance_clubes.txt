@@ -1,0 +1,45 @@
+# Cargar el paquete necesario. Instálalo si no está disponible.
+if (!require("worldfootballR")) {
+  install.packages("worldfootballR", dependencies = TRUE)
+  library(worldfootballR)
+}
+
+# Lista de países para los cuales extraer los balances de transferencia
+paises <-c("Spain", "Brazil", "Germany", "France", "Italy", "England", "Portugal", "Netherlands", "Uruguay", "Belgium", "Colombia", "Mexico", "Chile", "Croatia", "Sweden", "Switzerland", "United States", "Austria", "Russia", "Türkiye", "Greece", "Ukraine", "Scotland", "Denmark")
+  # Asegúrate de corregir la duplicación si fue un error.
+
+# Rango de años para el análisis
+anios <- 2018:2024
+
+# Inicializar un data frame para almacenar los datos de todos los países y años
+balances_totales <- data.frame()
+
+# Bucle para iterar sobre cada país y cada año
+for (i in 1:length(paises)) {
+  pais <- paises[i]
+  for (anio in anios) {
+    # Mostrar mensaje de progreso
+    cat("Extrayendo datos para", pais, "en el año", anio, "\n")
+    
+    # Intentar extraer los datos de balance de transferencia
+    try({
+      # Función para obtener balances de transferencia
+      balance_temp <- tm_team_transfer_balances(country_name = pais, start_year = anio)
+      
+      # Agregar información de país y año a los datos
+      balance_temp$Country <- pais
+      balance_temp$Year <- anio
+      
+      # Combinar los resultados en un data frame principal
+      balances_totales <- rbind(balances_totales, balance_temp)
+    }, silent = TRUE)  # Ignorar errores y continuar con el siguiente ciclo
+  }
+}
+
+# Guardar los datos en un archivo CSV
+write.csv(balances_totales, "Balances_Transferencia_2018_2024.csv", row.names = FALSE)
+
+# Opcional: Ver los datos en RStudio o cualquier otro IDE de R
+View(balances_totales)
+
+

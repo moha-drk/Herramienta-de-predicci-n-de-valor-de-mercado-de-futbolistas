@@ -1,0 +1,51 @@
+library(worldfootballR)
+library(dplyr)
+library(purrr)
+library(tidyr)
+
+# Definir el país y los años de interés
+country_name <- "United States"
+years <- 2018:2023  # Ajustado hasta 2023 ya que 2024 no está disponible
+
+# Obtener URLs de los equipos para cada año y mantener el año asociado
+team_urls_by_year <- map(years, function(year) {
+  tryCatch({
+    urls <- tm_league_team_urls(country_name = country_name, start_year = year)
+    if (length(urls) > 0) {
+      data.frame(url = urls, year = year)
+    } else {
+      data.frame(url = character(), year = integer())  # Retorna un dataframe vacío si no hay URLs
+    }
+  }, error = function(e) {
+    message(paste("No se encontraron datos para el país:", country_name, "en el año:", year))
+    return(data.frame(url = character(), year = integer()))  # Retorna un dataframe vacío si hay un error
+  })
+}) %>% bind_rows()
+
+# Verificar si se encontraron URLs
+if (nrow(team_urls_by_year) == 0) {
+  stop("No se encontraron URLs de equipos para ningún año.")
+}
+
+# Función para obtener estadísticas del equipo usando la URL específica y añadir el año
+get_team_stats <- function(team_url, year) {
+  tryCatch({
+    stats <- tm_squad_stats(team_url = team_url)
+    if (nrow(stats) > 0) {
+      stats$Year = year
+    }
+    stats
+  }, error = function(e) {
+    message(paste("Error al obtener estadísticas para:", team_url, "en el año:", year, "Error:", e$message))
+    return(data.frame())  # Retorna un dataframe vacío si hay un error
+  })
+}
+
+# Procesar las estadísticas de cada equipo
+all_team_stats <- pmap_df(team_urls_by_year, function(url, year) {
+  get_team_stats(url, year)
+})
+
+# Guardar los resultados en un archivo CSV
+write.csv(all_team_stats, "all_team_stats_2018_to_2023.csv", row.names = FALSE)
+message("El archivo 'all_team_stats_2018_to_2023.csv' ha sido creado con éxito.")

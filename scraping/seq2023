@@ -1,0 +1,15 @@
+import pandas as pd
+
+# Cargar los datos desde los archivos CSV
+df_transfers = pd.read_csv('transfers.csv')
+df_balances = pd.read_csv('balances_transferencia.csv')
+
+# Filtrar los datos para el año 2023
+df_transfers_2023 = df_transfers[df_transfers['year'] == 2023]
+df_balances_2023 = df_balances[df_balances['year'] == 2023]
+
+# Guardar los dataframes filtrados en nuevos archivos CSV
+df_transfers_2023.to_csv('transfers_2023.csv', index=False)
+df_balances_2023.to_csv('balances_transferencia_2023.csv', index=False)
+
+print("Los datos para el año 2023 han sido filtrados y guardados en 'transfers_2023.csv' y 'balances_transferencia_2023.csv'")

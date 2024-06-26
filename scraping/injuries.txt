@@ -1,0 +1,29 @@
+library(worldfootballR)
+library(dplyr)
+library(purrr)
+
+# Paso 1: Obtener las URLs de los equipos de La Liga desde 2018
+team_urls <- tm_league_team_urls(country_name = "Portugal", start_year = 2018) # Nota que mencionas "Spain" en un mensaje y "Italy" en otro, asegúrate de usar el país correcto.
+
+# Paso 2: Extraer URLs de los jugadores de cada equipo
+player_urls <- map(team_urls, function(team_url) {
+  Sys.sleep(2)  # Pausa de 2 segundos entre cada solicitud a team URLs
+  tm_team_player_urls(team_url = team_url)
+}) %>% 
+  unlist() %>% 
+  unique()
+
+# Paso 3: Obtener el historial de lesiones para cada jugador
+injury_histories <- map_df(player_urls, function(player_url) {
+  Sys.sleep(2)  # Pausa de 2 segundos entre cada solicitud a player URLs
+  tm_player_injury_history(player_urls = player_url)
+})
+
+# Paso 4: Filtrar lesiones por temporadas específicas (17/18 a 23/24)
+seasons_of_interest <- c("17/18", "18/19", "19/20", "20/21", "21/22", "22/23", "23/24")
+filtered_injuries <- filter(injury_histories, season_injured %in% seasons_of_interest)
+
+# Paso 5: Guardar los datos en un archivo CSV
+write.csv(filtered_injuries, "spanish_league_injuries.csv", row.names = FALSE)
+
+print("El archivo 'spanish_league_injuries.csv' ha sido creado con el historial de lesiones.")

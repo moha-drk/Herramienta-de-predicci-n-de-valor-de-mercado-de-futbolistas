@@ -1,0 +1,44 @@
+# Install and load necessary packages
+if (!require("worldfootballR")) install.packages("worldfootballR")
+library(worldfootballR)
+
+# List of countries
+countries <- c("Spain", "Brazil", "Germany", "France", "Italy", "England", "Portugal",
+               "Netherlands", "Uruguay", "Belgium", "Colombia", "Mexico", "Chile",
+               "Croatia", "Sweden", "Switzerland", "United States", "Austria",
+               "Russia", "Türkiye", "Greece", "Ukraine", "Scotland", "Denmark")
+
+# Years range
+years <- 2018:2024
+
+# Initialize an empty data frame to store all valuations
+all_valuations <- data.frame()
+
+# Loop through each country and year, scraping player market values
+for (country in countries) {
+  for (year in years) {
+    # Print progress
+    message(paste("Fetching data for", country, "in the year", year))
+
+    # Try to fetch data, continue even if some years/countries fail
+    try({
+      current_data <- tm_player_market_values(country_name = country, start_year = year)
+
+      # Check if data is not empty
+      if (nrow(current_data) > 0) {
+        # Fix scientific notations of the player market value
+        current_data$player_market_value_euro <- format(current_data$player_market_value_euro,
+                                                        scientific = FALSE)
+
+        # Append to the main data frame
+        all_valuations <- rbind(all_valuations, current_data)
+      }
+    }, silent = TRUE)
+  }
+}
+
+# View the complete dataset
+View(all_valuations)
+
+# Optionally, save the data to a CSV file
+write.csv(all_valuations, "player_market_valuations_2018_2024.csv", row.names = FALSE)
