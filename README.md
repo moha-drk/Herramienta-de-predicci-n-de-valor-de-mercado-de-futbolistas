@@ -12,6 +12,10 @@ sobre predicción de precios de transferencia de jugadores de fútbol. El proyec
 - **Interfaz**: Esta carpeta alberga los scripts necesarios para ejecutar la interfaz de usuario desarrollada con Streamlit, que permite interactuar con el modelo de predicción.
 - **combinado_datos**: Incluye scripts que facilitan la integración y limpieza de diferentes conjuntos de datos para prepararlos para el análisis.
 
+## Scraping
+
+Para scrapear datos actualizados deberás hacer uso de los scripts en R
+
 ## Instalación
 
 Para ejecutar los scripts y utilizar la interfaz, necesitarás instalar algunas dependencias. Asegúrate de tener Python instalado en tu sistema y luego instala las bibliotecas necesarias usando pip. Aquí está la lista de las principales dependencias:
